@@ -1,11 +1,10 @@
 package kamal.aishwarya.weather.ui.favorites
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,8 +17,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kamal.aishwarya.weather.model.FavoriteCity
 import androidx.compose.ui.tooling.preview.Preview
 import kamal.aishwarya.weather.ui.theme.WeatherTheme
-
-
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
@@ -49,6 +46,7 @@ fun FavoritesPreview() {
 fun FavoritesContent(
     favorites: List<FavoriteCity>,
     modifier: Modifier = Modifier,
+    onCityClick: (FavoriteCity) -> Unit = {}
 ) {
     Column(modifier = modifier.fillMaxSize().padding(12.dp)) {
         // Display favorites in a simple Column to avoid nesting scrollables.
@@ -61,17 +59,18 @@ fun FavoritesContent(
             )
         } else {
             favorites.forEach { city ->
-                FavoriteRow(city = city)
+                FavoriteRow(city = city, onClick = { onCityClick(city) })
             }
         }
     }
 }
 
 @Composable
-private fun FavoriteRow(city: FavoriteCity) {
+private fun FavoriteRow(city: FavoriteCity, onClick: () -> Unit = {}) {
     Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 6.dp)) {
+        .padding(vertical = 6.dp)
+        .clickable { onClick() }) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(text = "${city.name}, ${city.country}", style = MaterialTheme.typography.titleMedium)
             val tempText = city.lastTemperature?.let { "${it}°C" } ?: "N/A"

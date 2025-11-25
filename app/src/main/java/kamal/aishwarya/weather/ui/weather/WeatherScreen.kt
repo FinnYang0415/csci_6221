@@ -125,7 +125,7 @@ fun WeatherScreenContent(
         }
 
         else -> {
-            WeatherSuccessState(modifier = modifier, uiState = uiState, favoritesViewModel = favoritesViewModel)
+            WeatherSuccessState(modifier = modifier, uiState = uiState, weatherViewModel = viewModel, favoritesViewModel = favoritesViewModel)
         }
     }
 }
@@ -177,6 +177,7 @@ private fun WeatherErrorState(
 private fun WeatherSuccessState(
     modifier: Modifier,
     uiState: WeatherUiState,
+    weatherViewModel: WeatherViewModel? = null,
     favoritesViewModel: kamal.aishwarya.weather.ui.favorites.FavoritesViewModel? = null,
 ) {
     Column(
@@ -234,7 +235,15 @@ private fun WeatherSuccessState(
         }
 
         if (showFavorites.value) {
-            FavoritesContent(favorites = favoritesList, modifier = Modifier.padding(8.dp))
+            FavoritesContent(
+                favorites = favoritesList,
+                modifier = Modifier.padding(8.dp),
+                onCityClick = { city ->
+                    // Request weather for the selected favorite and close the favorites view
+                    weatherViewModel?.getWeather(city.name)
+                    showFavorites.value = false
+                }
+            )
         }
         Text(
             modifier = Modifier.padding(start = 12.dp, end = 12.dp),
