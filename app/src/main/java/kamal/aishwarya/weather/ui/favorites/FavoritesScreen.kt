@@ -50,11 +50,19 @@ fun FavoritesContent(
     favorites: List<FavoriteCity>,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize().padding(8.dp)) {
-        // Use a simple Column here to avoid nesting a LazyColumn inside a scrollable parent.
-        // The weather screen already has a verticalScroll; nesting scrollables can crash at runtime.
-        favorites.forEach { city ->
-            FavoriteRow(city = city)
+    Column(modifier = modifier.fillMaxSize().padding(12.dp)) {
+        // Display favorites in a simple Column to avoid nesting scrollables.
+        // The parent weather screen already has verticalScroll; nested scrollables cause runtime errors.
+        if (favorites.isEmpty()) {
+            Text(
+                text = "No favorite cities yet. Add one from the weather screen!",
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        } else {
+            favorites.forEach { city ->
+                FavoriteRow(city = city)
+            }
         }
     }
 }
