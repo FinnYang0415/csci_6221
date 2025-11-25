@@ -1,4 +1,61 @@
 # Weather
+
+Lightweight Android weather app built with Jetpack Compose.
+
+This project fetches weather data for a city and displays current conditions, hourly forecasts, and daily forecasts. A simple "Favorites" feature lets you store favorite cities in memory (in-app only).
+
+## What's new in this fork
+
+- Added a Favorite city feature:
+    - `FavoriteCity` data class with name, country, lastTemperature and description.
+    - `FavoritesRepository`: simple in-memory repository using `StateFlow`.
+    - `FavoritesViewModel`: exposes favorites as a `State<List<FavoriteCity>>` and provides `addFavorite(...)` and `removeFavorite(...)` methods.
+    - `FavoritesScreen` UI and inline favorites listing in the main weather screen for quick verification.
+
+## Quick start
+
+Prerequisites:
+
+- JDK 11 or higher
+- Android Studio (Arctic Fox or later recommended)
+
+Build and run:
+
+```powershell
+# From the project root on Windows
+.\gradlew.bat clean
+.\gradlew.bat assembleDebug
+```
+
+Open the project in Android Studio and run the `app` module on an emulator or device.
+
+Usage:
+
+- Search for a city using the top app bar.
+- When weather appears, tap "Add to favorites" to add it to the in-memory favorites list.
+- Tap "Show favorites" on the weather screen to view current favorites (this is an in-memory demo — not persisted).
+
+## Project structure
+
+- `app/` - Android app module with UI, ViewModels, and data layer.
+- `app/src/main/java/kamal/aishwarya/weather/model/` - domain models.
+- `app/src/main/java/kamal/aishwarya/weather/data/repository/` - repository implementations.
+- `app/src/main/java/kamal/aishwarya/weather/ui/` - Jetpack Compose UI and screens.
+
+## Architecture
+
+This app follows MVVM with a Repository layer. ViewModels expose UI state (via `StateFlow` or Compose `State`) and repositories handle data fetching.
+
+## Notes & next steps
+
+- Favorites are currently stored in-memory and will be lost on app restart. Persisting favorites using Room or DataStore is a recommended next step.
+- Consider adding navigation between screens and a dedicated favorites screen route.
+
+## License
+
+This project is provided as-is. See the repository for license details.
+
+# Weather
 [![Kotlin](https://img.shields.io/badge/kotlin-1.8.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![Gradle](https://img.shields.io/badge/Gradle-8-green?style=flat)](https://gradle.org)
 <a href="https://github.com/aishwarya-kamal"><img alt="License" src="https://img.shields.io/static/v1?label=GitHub&message=aishwarya-kamal&color=C51162"/></a><br>

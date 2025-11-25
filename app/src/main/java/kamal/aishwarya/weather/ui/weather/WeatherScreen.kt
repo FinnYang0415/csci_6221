@@ -36,6 +36,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -52,6 +54,8 @@ import androidx.compose.ui.tooling.preview.Devices.PIXEL_XL
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kamal.aishwarya.weather.ui.favorites.FavoritesViewModel
+import kamal.aishwarya.weather.ui.favorites.FavoritesContent
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import kamal.aishwarya.weather.R
@@ -72,6 +76,7 @@ import kotlin.random.Random
 fun WeatherScreen(
     modifier: Modifier = Modifier,
     viewModel: WeatherViewModel = hiltViewModel(),
+    favoritesViewModel: kamal.aishwarya.weather.ui.favorites.FavoritesViewModel? = hiltViewModel(),
 ) {
     val searchWidgetState by viewModel.searchWidgetState
     val searchTextState by viewModel.searchTextState
@@ -97,7 +102,7 @@ fun WeatherScreen(
                     .padding(paddingValues),
                 color = MaterialTheme.colorScheme.background
             ) {
-                WeatherScreenContent(uiState = uiState, modifier = modifier, viewModel = viewModel)
+                WeatherScreenContent(uiState = uiState, modifier = modifier, viewModel = viewModel, favoritesViewModel = favoritesViewModel)
             }
         },
     )
@@ -108,6 +113,7 @@ fun WeatherScreenContent(
     uiState: WeatherUiState,
     modifier: Modifier = Modifier,
     viewModel: WeatherViewModel?,
+    favoritesViewModel: kamal.aishwarya.weather.ui.favorites.FavoritesViewModel? = null,
 ) {
     when {
         uiState.isLoading -> {
@@ -119,7 +125,7 @@ fun WeatherScreenContent(
         }
 
         else -> {
-            WeatherSuccessState(modifier = modifier, uiState = uiState)
+            WeatherSuccessState(modifier = modifier, uiState = uiState, favoritesViewModel = favoritesViewModel)
         }
     }
 }
@@ -171,6 +177,7 @@ private fun WeatherErrorState(
 private fun WeatherSuccessState(
     modifier: Modifier,
     uiState: WeatherUiState,
+    favoritesViewModel: kamal.aishwarya.weather.ui.favorites.FavoritesViewModel? = null,
 ) {
     Column(
         modifier = modifier
@@ -178,6 +185,9 @@ private fun WeatherSuccessState(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        val showFavorites = remember { mutableStateOf(false) }
+        val favoritesList = favoritesViewModel?.favoritesState?.value ?: emptyList()
+        
         Text(
             modifier = Modifier.padding(top = 12.dp),
             text = uiState.weather?.name.orEmpty(),
@@ -207,6 +217,25 @@ private fun WeatherSuccessState(
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
         )
+        Button(onClick = {
+            uiState.weather?.let { w ->
+                favoritesViewModel?.addFavorite(
+                    cityName = w.name,
+                    country = "",
+                    temp = w.temperature.toDouble(),
+                    description = w.condition.text,
+                )
+            }
+        }) {
+            Text(text = "Add to favorites")
+        }
+        Button(onClick = { showFavorites.value = !showFavorites.value }) {
+            Text(text = if (showFavorites.value) "Hide favorites" else "Show favorites")
+        }
+
+        if (showFavorites.value) {
+            FavoritesContent(favorites = favoritesList, modifier = Modifier.padding(8.dp))
+        }
         Text(
             modifier = Modifier.padding(start = 12.dp, end = 12.dp),
             text = uiState.weather?.condition?.text.orEmpty(),
