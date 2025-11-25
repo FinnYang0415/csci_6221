@@ -1,3 +1,4 @@
+// Weather App Gradle Configuration
 pluginManagement {
     repositories {
         google()

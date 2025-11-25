@@ -1,3 +1,4 @@
+# Android build artifacts and caches
 *.iml
 .gradle
 /local.properties
